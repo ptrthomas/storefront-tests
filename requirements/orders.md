@@ -20,6 +20,7 @@ The system **shall** add a surcharge for rush delivery.
 
 **Acceptance:**
 - 1: WHEN rush delivery is selected THE SYSTEM SHALL add a 15% surcharge on the discounted subtotal
+- 2: WHEN a rush order is over 500 THE SYSTEM SHALL waive the rush surcharge
 
 ### DEMO-PRICE-003: Shipping
 @criticality=medium
