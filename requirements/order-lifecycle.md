@@ -53,3 +53,4 @@ The system **shall** return an order by its id.
 **Acceptance:**
 - 1: WHEN a signed-in caller reads an existing order THE SYSTEM SHALL return its id, status, items and total
 - 2: IF the order id does not exist THEN THE SYSTEM SHALL respond 404
+- 3: IF the order belongs to another customer THEN THE SYSTEM SHALL respond 403
