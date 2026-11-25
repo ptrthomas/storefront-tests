@@ -1,0 +1,6 @@
+# machine-written, never committed (D196): run evidence, regenerable reports,
+# local secrets and the rulebooks' run baselines
+runs/
+target/
+.env
+.baseline/

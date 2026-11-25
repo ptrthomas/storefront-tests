@@ -1,0 +1,100 @@
+[
+  {
+    "_id": "gold-single-gadget",
+    "_label": "gold tier — single gadget (10% off, pays shipping)",
+    "tier": "gold",
+    "rush": false,
+    "items": [
+      {
+        "sku": "GADGET",
+        "qty": 1,
+        "unitPrice": 80
+      }
+    ]
+  },
+  {
+    "_id": "silver-mixed",
+    "_label": "silver tier — mixed small cart (5% off)",
+    "tier": "silver",
+    "rush": false,
+    "items": [
+      {
+        "sku": "WIDGET",
+        "qty": 1,
+        "unitPrice": 25
+      },
+      {
+        "sku": "CABLE",
+        "qty": 1,
+        "unitPrice": 5
+      }
+    ]
+  },
+  {
+    "_id": "gold-rush-bulk",
+    "_label": "gold tier, rush, bulk gadgets (free shipping kicks in)",
+    "tier": "gold",
+    "rush": true,
+    "items": [
+      {
+        "sku": "GADGET",
+        "qty": 2,
+        "unitPrice": 80
+      }
+    ]
+  },
+  {
+    "_id": "large-needs-review",
+    "_label": "large order over $1000 — routes to manual review",
+    "tier": "standard",
+    "rush": false,
+    "items": [
+      {
+        "sku": "GADGET",
+        "qty": 15,
+        "unitPrice": 80
+      }
+    ]
+  },
+  {
+    "_id": "free-ship-threshold",
+    "_label": "at the $100 free-shipping threshold",
+    "tier": "standard",
+    "rush": false,
+    "items": [
+      {
+        "sku": "WIDGET",
+        "qty": 4,
+        "unitPrice": 25
+      }
+    ]
+  },
+  {
+    "_id": "reject-unknown-tier",
+    "_label": "an unknown tier is refused — the shape lists the tiers the API accepts",
+    "_expect": "schema-reject",
+    "tier": "bronze",
+    "rush": false,
+    "items": [
+      {
+        "sku": "WIDGET",
+        "qty": 1,
+        "unitPrice": 25
+      }
+    ]
+  },
+  {
+    "_id": "reject-qty-not-a-number",
+    "_label": "a non-numeric quantity is refused before the oracle ever runs",
+    "_expect": "schema-reject",
+    "tier": "gold",
+    "rush": false,
+    "items": [
+      {
+        "sku": "WIDGET",
+        "qty": "two",
+        "unitPrice": 25
+      }
+    ]
+  }
+]

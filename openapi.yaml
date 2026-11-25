@@ -1,0 +1,243 @@
+openapi: 3.0.0
+info:
+  title: Acme Orders API
+  version: 1.0.0
+  description: The /demo storefront's pricing API and its order API — the contract the checks exercise and coverage measures.
+paths:
+  /demo/api/products:
+    get:
+      operationId: listProducts
+      summary: List the product catalog
+      responses:
+        '200':
+          description: the catalog
+  /demo/api/quote:
+    post:
+      operationId: createQuote
+      summary: Price a cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [items]
+              properties:
+                tier:
+                  type: string
+                  enum: [standard, silver, gold, platinum]
+                rush:
+                  type: boolean
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required: [sku, qty]
+                    properties:
+                      sku:
+                        type: string
+                      qty:
+                        type: integer
+      responses:
+        '200':
+          description: the priced quote
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tier:
+                    type: string
+                  rush:
+                    type: boolean
+                  subtotal:
+                    type: number
+                  discount:
+                    type: number
+                  rushSurcharge:
+                    type: number
+                  shipping:
+                    type: number
+                  total:
+                    type: number
+                  outcome:
+                    type: string
+                    enum: [auto_approved, needs_review]
+        '400':
+          description: an invalid cart (unknown sku or non-positive qty)
+  /demo/api/login:
+    post:
+      operationId: login
+      summary: Sign in for a Bearer token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: the token every order call carries as a Bearer credential
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          description: a body that is not valid JSON
+        '401':
+          description: a wrong username or password
+  /demo/api/orders:
+    post:
+      operationId: createOrder
+      summary: Create an order from a cart
+      security:
+        - bearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [items]
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/OrderLine'
+      responses:
+        '201':
+          description: the order, status created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: an invalid cart (unknown sku or non-positive qty)
+        '401':
+          description: no token, or an unknown one
+  /demo/api/orders/{id}:
+    get:
+      operationId: getOrder
+      summary: Read an order
+      security:
+        - bearer: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: the order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          description: no token, or an unknown one
+        '404':
+          description: no such order
+  /demo/api/orders/{id}/pay:
+    post:
+      operationId: payOrder
+      summary: Pay a created order
+      security:
+        - bearer: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: the order, status paid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          description: no token, or an unknown one
+        '404':
+          description: no such order
+        '409':
+          description: the order is not created
+  /demo/api/orders/{id}/ship:
+    post:
+      operationId: shipOrder
+      summary: Ship a paid order
+      security:
+        - bearer: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: the order, status shipped
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          description: no token, or an unknown one
+        '404':
+          description: no such order
+        '409':
+          description: the order is not paid
+  /demo/api/orders/{id}/cancel:
+    post:
+      operationId: cancelOrder
+      summary: Cancel an order that has not shipped
+      security:
+        - bearer: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: the order, status cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          description: no token, or an unknown one
+        '404':
+          description: no such order
+        '409':
+          description: the order has shipped or is already cancelled
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+  parameters:
+    OrderId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+  schemas:
+    OrderLine:
+      type: object
+      required: [sku, qty]
+      properties:
+        sku:
+          type: string
+        qty:
+          type: integer
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum: [created, paid, shipped, cancelled]
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderLine'
+        total:
+          type: number
